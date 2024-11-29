@@ -31,7 +31,7 @@ mongoose
 
 // CORS Configuration - Secure Setup
 const allowedOrigins = [
-  "http://yourfrontenddomain.com",
+  "https://flight-booking-reservation2.netlify.app",
   "http://localhost:3000",
 ]; // Your frontend URL(s)
 app.use(
