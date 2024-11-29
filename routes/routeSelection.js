@@ -3,15 +3,16 @@ const router = express.Router();
 const bus = require("../models/Buses");
 
 router.post('/', (req, res) => {
-    bus.findOne({ "startCity": req.body.startCity, "destination": req.body.destination }).exec((err, bus) => { 
-        if (err) { 
-            res.json({ status: false, message: "error while searching with ID"})
-        }  
-        else {
-            res.json({ status: true, bus: bus })
-        }
+    res.json({ status: true, message: "bus selected" })
+    // bus.findOne({ "startCity": req.body.startCity, "destination": req.body.destination }).exec((err, bus) => { 
+    //     if (err) { 
+    //         res.json({ status: false, message: "error while searching with ID"})
+    //     }  
+    //     else {
+    //         res.json({ status: true, bus: bus })
+    //     }
 
-    })
+    // })
 
 })
 
