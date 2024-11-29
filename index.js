@@ -36,15 +36,7 @@ const allowedOrigins = [
 ]; // Your frontend URL(s)
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (allowedOrigins.includes(origin) || !origin) {
-        callback(null, true); // Allow requests from the specified origins
-      } else {
-        callback(new Error("Not allowed by CORS")); // Reject other origins
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers in requests
+    origin: "https://flight-booking-reservation2.netlify.app"
   })
 );
 
