@@ -15,15 +15,15 @@ router.post('/', (req, res) => {
 
 })
 
-router.post("/", (req, res) => {
-    bus.findOne({ _id: req.body.bId }, (err, bus) => {
-        if (err) {
-            res.json({ status: false, message: "error while searching with ID"})
-        }
-        else {
-            res.json({ status: true, bus: bus })
-        }
+// router.post("/", (req, res) => {
+//     bus.findOne({ _id: req.body.bId }, (err, bus) => {
+//         if (err) {
+//             res.json({ status: false, message: "error while searching with ID"})
+//         }
+//         else {
+//             res.json({ status: true, bus: bus })
+//         }
 
-    })
-})
+//     })
+// })
 module.exports = router;
