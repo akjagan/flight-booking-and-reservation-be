@@ -24,15 +24,36 @@ const DB_URL = process.env.MongoURI || config.MongoURI; // Use environment varia
 mongoose
   .connect(DB_URL)
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1); // Exit the process if the connection fails
+  });
+
+// CORS Configuration - Secure Setup
+const allowedOrigins = [
+  "http://yourfrontenddomain.com",
+  "http://localhost:3000",
+]; // Your frontend URL(s)
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true); // Allow requests from the specified origins
+      } else {
+        callback(new Error("Not allowed by CORS")); // Reject other origins
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers in requests
+  })
+);
 
 // Middleware
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(cors());
 
 // Root Route
 app.get("/", (req, res) => {
@@ -61,6 +82,73 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
+// const express = require("express");
+// const path = require("path");
+// const cookieParser = require("cookie-parser");
+// const logger = require("morgan");
+// const mongoose = require("mongoose");
+// const passport = require("passport");
+// const cors = require("cors");
+// const registerRoute = require("./routes/register");
+// const loginRoute = require("./routes/login");
+// const loggedInPage = require("./routes/loggedInUser");
+// const bookingRoute = require("./routes/routeSelection");
+// const config = require("./config/keys"); // Adjust the path to your config file
+
+// const app = express();
+
+// // Load environment variables
+// require("dotenv").config();
+// require("./auth/auth"); // Initialize authentication strategies
+
+// // Database configuration
+// const DB_URL = process.env.MongoURI || config.MongoURI; // Use environment variable or config file
+
+// // Connect to MongoDB
+// mongoose
+//   .connect(DB_URL)
+//   .then(() => console.log("MongoDB Connected"))
+//   .catch((err) => {
+//     console.error("MongoDB connection error:", err.message);
+//     process.exit(1); // Exit the process if the connection fails
+//   });
+
+// // Middleware
+// app.use(logger("dev"));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, "public")));
+// app.use(cors());
+
+// // Root Route
+// app.get("/", (req, res) => {
+//   res.status(200).json({ message: "Welcome to the Flight Booking API" });
+// });
+
+// // Routes
+// app.use("/api", loginRoute);
+// app.use("/booking", bookingRoute);
+// app.use("/api/register", registerRoute);
+// app.use(
+//   "/user",
+//   passport.authenticate("jwt", { session: false }),
+//   loggedInPage
+// );
+
+// // Handle 404 errors
+// app.use((req, res) => {
+//   res.status(404).json({ message: "Not Found" });
+// });
+
+// // Server Start
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Server is running at http://localhost:${PORT}`);
+// });
+
+// module.exports = app;
 
 // const express = require('express');
 // const path = require("path");
