@@ -36,7 +36,7 @@ const allowedOrigins = [
 ]; // Your frontend URL(s)
 app.use(
   cors({
-    origin: "https://flight-booking-reservation2.netlify.app"
+    origin:"https://flight-booking-reservation2.netlify.app"
   })
 );
 
