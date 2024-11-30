@@ -73,6 +73,15 @@ app.use(
   loggedInPage
 );
 
+// Error handling middleware - Add this before the 404 handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+});
+
 // Handle 404 errors
 app.use((req, res) => {
   res.status(404).json({ message: "Not Found" });
