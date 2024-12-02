@@ -9,7 +9,7 @@ const registerRoute = require("./routes/register");
 const loginRoute = require("./routes/login");
 const loggedInPage = require("./routes/loggedInUser");
 const bookingRoute = require("./routes/routeSelection");
-const config = require("./config/keys"); // Adjust the path to your config file
+const config = require("./config/keys");
 
 const app = express();
 
@@ -29,27 +29,34 @@ mongoose
     process.exit(1); // Exit the process if the connection fails
   });
 
-// CORS Configuration - Secure Setup
+// CORS Configuration - Dynamic setup for local development and deployment
 const allowedOrigins = [
-  "https://flightbooking-frontend11.netlify.app",
-  "http://localhost:5174",
-]; // Your frontend URL(s)
+  "http://localhost:5174", // Local development
+  "https://flightbooking-frontend11.netlify.app", // Production frontend
+];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.error(`Blocked by CORS: Origin '${origin}' is not allowed`);
       callback(new Error("Not allowed by CORS"));
     }
   },
-  allowedHeaders: ["Content-Type", "Authorization"], // Add allowed headers
-  credentials: true,
+  credentials: true, // Allow cookies or credentials
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+  ],
   optionsSuccessStatus: 200, // For legacy browser support
 };
 
+// Apply CORS middleware
 app.use(cors(corsOptions));
-
 
 // Middleware
 app.use(logger("dev"));
@@ -65,21 +72,45 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api", loginRoute);
+console.log("Login route loaded from login.js");
+
 app.use("/api/booking", bookingRoute);
+console.log("Booking route loaded from routeSelection.js");
+
 app.use("/api/register", registerRoute);
+console.log("Register route loaded from register.js");
+
 app.use(
   "/user",
   passport.authenticate("jwt", { session: false }),
   loggedInPage
 );
 
-// Error handling middleware - Add this before the 404 handler
+// Preflight (OPTIONS) request handler
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
+    );
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, X-Requested-With, Accept"
+    );
+    res.header("Access-Control-Allow-Credentials", "true");
+    return res.sendStatus(200); // Respond to OPTIONS requests
+  }
+  next();
+});
+
+// Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({
-        message: err.message || 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? err : {}
-    });
+  console.error("Error stack:", err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err : {},
+  });
 });
 
 // Handle 404 errors
