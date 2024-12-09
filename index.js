@@ -71,7 +71,7 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/api", loginRoute);
+app.use("/api/", loginRoute);
 console.log("Login route loaded from login.js");
 
 app.use("/api/booking", bookingRoute);

@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const dayjs = require("dayjs");
 const Bus = require("../models/Buses");
 
 // POST /booking
@@ -8,58 +7,36 @@ router.post("/", async (req, res) => {
   console.log("POST /booking endpoint hit");
   console.log("Request Body:", req.body);
 
-  const { startCity, destination, departureDate } = req.body;
+  const { startCity, destination } = req.body; // Removed 'departureDate'
 
   // Validate inputs
-  if (!startCity || !destination || !departureDate) {
+  if (!startCity || !destination) {
     console.error("Validation Error: Missing required fields.");
     return res.status(400).json({
       status: false,
-      message:
-        "Fields 'startCity', 'destination', and 'departureDate' are required.",
+      message: "Fields 'startCity' and 'destination' are required.",
     });
   }
 
   try {
     console.log(
-      `Searching for buses from '${startCity}' to '${destination}' for date '${departureDate}'...`
+      `Searching for buses from '${startCity}' to '${destination}'...`
     );
-
-    // Ensure the date format is MM/DD/YYYY
-    const standardizedDate = dayjs(departureDate, "MM/DD/YYYY", true).format(
-      "MM/DD/YYYY"
-    );
-
-    if (!dayjs(standardizedDate, "MM/DD/YYYY").isValid()) {
-      console.error("Invalid date format provided:", departureDate);
-      return res.status(400).json({
-        status: false,
-        message: "Invalid date format. Please use 'MM/DD/YYYY'.",
-      });
-    }
-
-    // Convert to DD/MM/YYYY for MongoDB comparison
-    const mongoDBDateFormat = dayjs(standardizedDate, "MM/DD/YYYY").format(
-      "DD/MM/YYYY"
-    );
-
-    console.log("Converted Date for MongoDB:", mongoDBDateFormat);
 
     // Query the database for matching buses
     const matchingBuses = await Bus.find({
       startCity: { $regex: new RegExp(`^${startCity}$`, "i") },
       destination: { $regex: new RegExp(`^${destination}$`, "i") },
-      date: mongoDBDateFormat, // Use the converted date format
     });
 
     if (!matchingBuses || matchingBuses.length === 0) {
       console.warn(
-        `No buses found for startCity: '${startCity}', destination: '${destination}', date: '${mongoDBDateFormat}'`
+        `No buses found for startCity: '${startCity}' and destination: '${destination}'`
       );
 
       return res.status(404).json({
         status: false,
-        message: `No buses found from '${startCity}' to '${destination}' on '${mongoDBDateFormat}'.`,
+        message: `No buses found from '${startCity}' to '${destination}'.`,
       });
     }
 
@@ -79,6 +56,88 @@ router.post("/", async (req, res) => {
 });
 
 module.exports = router;
+
+// const express = require("express");
+// const router = express.Router();
+// const dayjs = require("dayjs");
+// const Bus = require("../models/Buses");
+
+// // POST /booking
+// router.post("/", async (req, res) => {
+//   console.log("POST /booking endpoint hit");
+//   console.log("Request Body:", req.body);
+
+//   const { startCity, destination, departureDate } = req.body;
+
+//   // Validate inputs
+//   if (!startCity || !destination || !departureDate) {
+//     console.error("Validation Error: Missing required fields.");
+//     return res.status(400).json({
+//       status: false,
+//       message:
+//         "Fields 'startCity', 'destination', and 'departureDate' are required.",
+//     });
+//   }
+
+//   try {
+//     console.log(
+//       `Searching for buses from '${startCity}' to '${destination}' for date '${departureDate}'...`
+//     );
+
+//     // Ensure the date format is MM/DD/YYYY
+//     const standardizedDate = dayjs(departureDate, "MM/DD/YYYY", true).format(
+//       "MM/DD/YYYY"
+//     );
+
+//     if (!dayjs(standardizedDate, "MM/DD/YYYY").isValid()) {
+//       console.error("Invalid date format provided:", departureDate);
+//       return res.status(400).json({
+//         status: false,
+//         message: "Invalid date format. Please use 'MM/DD/YYYY'.",
+//       });
+//     }
+
+//     // Convert to DD/MM/YYYY for MongoDB comparison
+//     const mongoDBDateFormat = dayjs(standardizedDate, "MM/DD/YYYY").format(
+//       "DD/MM/YYYY"
+//     );
+
+//     console.log("Converted Date for MongoDB:", mongoDBDateFormat);
+
+//     // Query the database for matching buses
+//     const matchingBuses = await Bus.find({
+//       startCity: { $regex: new RegExp(`^${startCity}$`, "i") },
+//       destination: { $regex: new RegExp(`^${destination}$`, "i") },
+//       date: mongoDBDateFormat, // Use the converted date format
+//     });
+
+//     if (!matchingBuses || matchingBuses.length === 0) {
+//       console.warn(
+//         `No buses found for startCity: '${startCity}', destination: '${destination}', date: '${mongoDBDateFormat}'`
+//       );
+
+//       return res.status(404).json({
+//         status: false,
+//         message: `No buses found from '${startCity}' to '${destination}' on '${mongoDBDateFormat}'.`,
+//       });
+//     }
+
+//     console.log("Matching buses found:", matchingBuses);
+//     return res.status(200).json({
+//       status: true,
+//       message: "Buses found successfully.",
+//       buses: matchingBuses,
+//     });
+//   } catch (error) {
+//     console.error("Error occurred while fetching bus details:", error);
+//     return res.status(500).json({
+//       status: false,
+//       message: "Internal server error. Please try again later.",
+//     });
+//   }
+// });
+
+// module.exports = router;
 
 // const express = require("express");
 // const router = express.Router();
