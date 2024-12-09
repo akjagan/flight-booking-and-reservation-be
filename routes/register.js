@@ -16,10 +16,10 @@ router.post("/", async (req, res) => {
     console.log("Register endpoint hit");
     console.log("Request body:", req.body);
 
-    const { name, email, password, mobile, gender, dob } = req.body;
+    const { name, email, password, mobile, gender } = req.body;
 
     // Input validation
-    if (!name || !email || !password || !mobile || !gender || !dob) {
+    if (!name || !email || !password || !mobile || !gender) {
       console.error("Validation Error: Missing fields");
       return res.status(400).json({
         status: false,
@@ -48,7 +48,7 @@ router.post("/", async (req, res) => {
       password: hashedPassword,
       mobile,
       gender,
-      dob: moment(dob).format("YYYY-MM-DD"),
+      // dob: moment(dob).format("YYYY-MM-DD"),
     });
 
     await user.save();
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
         email: user.email,
         mobile: user.mobile,
         gender: user.gender,
-        dob: user.dob,
+        // dob: user.dob,
       },
     });
   } catch (error) {

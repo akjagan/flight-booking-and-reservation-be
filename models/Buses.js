@@ -18,10 +18,12 @@ const BusSchema = new Schema(
     startCity: {
       type: String,
       required: true, // Start city is mandatory
+      index: true, // Indexing the start city for efficient querying
     },
     destination: {
       type: String,
       required: true, // Destination is mandatory
+      index: true, // Indexing the destination for efficient querying
     },
     totalSeats: {
       type: Number,
@@ -32,6 +34,12 @@ const BusSchema = new Schema(
       type: Number,
       required: true, // Available seats should be a number
       min: 0, // Minimum available seats should be 0
+      validate: {
+        validator: function (val) {
+          return val <= this.totalSeats;
+        },
+        message: "Available seats cannot exceed total seats.",
+      },
     },
     pricePerSeat: {
       type: Number,
@@ -47,15 +55,15 @@ const BusSchema = new Schema(
       required: true, // Assuming arrival time is mandatory
     },
     departureDate: {
-      type: Date,
+      type: String,
       required: true, // Assuming departure date is mandatory
     },
     arrivalDate: {
-      type: Date,
+      type: String,
       required: true, // Assuming arrival date is mandatory
     },
   },
-  { collection: "buses" }
+  { collection: "Buses" }
 );
 
 const Bus = mongoose.model("Bus", BusSchema);
