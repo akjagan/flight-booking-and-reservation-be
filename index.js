@@ -31,7 +31,7 @@ mongoose
 
 // CORS Configuration - Dynamic setup for local development and deployment
 const allowedOrigins = [
-  "http://localhost:5174", // Local development
+  "http://localhost:5173", // Local development
   "https://flightbooking-frontend11.netlify.app", // Production frontend
 ];
 

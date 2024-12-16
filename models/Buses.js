@@ -48,11 +48,11 @@ const BusSchema = new Schema(
     },
     departureTime: {
       type: String,
-      required: true,
+      required: false,
     },
     arrivalTime: {
       type: String,
-      required: true,
+      required: false,
     },
   },
   { collection: "Buses" }
