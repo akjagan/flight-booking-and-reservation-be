@@ -33,6 +33,7 @@ mongoose
 const allowedOrigins = [
   "http://localhost:5173", // Local development
   "https://flightbooking-frontend11.netlify.app", // Production frontend
+  "https://flight-booking-final-2.netlify.app",
 ];
 
 const corsOptions = {
